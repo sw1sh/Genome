@@ -1,0 +1,7 @@
+# Build output. The documentation notebooks are generated from markdown by the
+# parent workspace's scripts/build_notebooks.wls; build/ and *.paclet come from
+# the publish pipeline. None of it is source.
+/Documentation/
+/build/
+*.paclet
+.DS_Store
