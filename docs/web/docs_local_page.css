@@ -1,0 +1,43 @@
+/* Chrome repairs for the OFFLINE-rendered documentation pages (the `local` target).
+
+   DocumentationBuildHTML emits every page wrapped in the wolfram.com chrome - a global
+   header strip, a sticky page header with a site-search form, a left menu rail and a
+   second copy of the See Also / Related Guides links above the content - and expects
+   the live site to style and populate it. The language-assets bundle it ships carries
+   no rule for any of those containers (grep language-assets-v2/css and
+   common/framework/css for .stickyheader, .menu-container, .page-container: nothing),
+   so offline they render as raw markup stacked above the page. The shell's own hide
+   rules in docs_site.js target the CLOUD embed ids, which these files do not carry.
+
+   The content itself - usage box, Details and Options, Examples, the related-links
+   sections at the foot - is fully styled by the bundle, so this sheet only removes the
+   chrome the offline build cannot support and gives the content column a width. */
+
+/* gui.en.css reserves a 100px band for #_header, the site-wide navigation bar that is
+   injected by the live site and absent here; without it the band is an empty stripe. */
+html { border-top: 0; }
+
+/* The sticky header duplicates the page title and carries a search form posting to
+   /search/, an endpoint the offline site does not have. */
+header.stickyheader { display: none; }
+
+/* The left rail is a flat unstyled link list that overlaps the headings, and its
+   scroll-spy behaviour needs the live site's layout. The shell supplies navigation. */
+.page-container > .menu-container { display: none; }
+.page-container { display: block; }
+
+/* The second See Also / Related Guides copy: a dropdown bar that needs the missing
+   chrome CSS to collapse. The real sections at the foot of the page are styled. */
+.content-container > .main-heading-wrapper nav.topContentWrap { display: none; }
+
+.content-container { max-width: 1000px; margin: 0 auto; padding: 0 1.5rem 4rem; }
+
+/* Every input cell ships an unstyled accessibility twin ("Wolfram Language code: ..."),
+   which without the visually-hidden rule prints as a duplicate under each input. */
+.screen-reader-only {
+    position: absolute !important;
+    width: 1px; height: 1px;
+    margin: -1px; padding: 0; border: 0;
+    overflow: hidden; white-space: nowrap;
+    clip: rect(0 0 0 0); clip-path: inset(50%);
+}

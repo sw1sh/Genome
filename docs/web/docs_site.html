@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>`title` - Wolfram Institute</title>
+<link rel="stylesheet" href="https://www.wolframcdn.com/fonts/source-sans-pro/1.0/global.css" />
+<style>`css`</style>
+</head>
+<body>
+<header id="hdr">
+  <button id="navToggle" type="button" aria-label="Guides">&#9776;</button>
+  <span class="brand" id="homelink">`title`<span class="sub">Wolfram Institute</span></span>
+  <input id="q" type="search" autocomplete="off" spellcheck="false"
+    placeholder="Filter guides and symbols  (/)" aria-label="Filter the navigation" />
+  <button id="symToggle" type="button" aria-label="Symbols">&#8942;</button>
+  <!-- "Resource page": the cloud twin of whatever is open, kept in step by setTwin().  SITE
+       ONLY - build_docs.wls leaves the slot empty on the local target, where BASE is "." and the
+       button would only reopen local files (at home, the shell itself) in a new tab, a second
+       out-arrowed "go to the resource" affordance next to the rail's working one. -->
+  `twin`
+</header>
+<div id="scrim"></div>
+<div id="main">
+  <nav id="side">`sidebar`</nav>
+  <div class="splitter" id="splitL" role="separator" aria-orientation="vertical" tabindex="0"
+       aria-label="Resize the guides rail"></div>
+  <div id="content">
+    <div id="loading">Loading...</div>
+    <!-- Pre-rendered notebook HTML, painted before the embedder runs. The framed page arrives with
+         an EMPTY #notebook-embed div and fills it in client-side, so a reader stares at blank space
+         until the embedder has fetched and laid out the notebook. The cloud already renders every
+         notebook to HTML at /statichtml/... - same origin as this shell, so we can just show it. -->
+    <div id="static"></div>
+    <iframe id="frame" src="`homeURL`" title="documentation"></iframe>
+  </div>
+  <div class="splitter" id="splitR" role="separator" aria-orientation="vertical" tabindex="0"
+       aria-label="Resize the symbols rail"></div>
+  <nav id="side-right">`symbols`</nav>
+</div>
+<script>`js`</script>
+</body>
+</html>

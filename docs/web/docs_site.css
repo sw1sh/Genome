@@ -1,0 +1,201 @@
+/* Genome documentation shell.
+
+   Palette: the nucleotide-flavoured spectrum scripts/build_hero.wls paints the hero with
+   (crimson -> amber -> gold -> green -> teal -> blue -> indigo -> violet, walking from raw
+   file handling to interpretation). Teal #2fae8f - the interpretation end of that ramp -
+   is the accent; the full ramp shows up once, as the hairline under the header. */
+:root {
+  --ink: #1c2026;
+  --accent: #2fae8f;
+  --accent-deep: #14705f;
+  --accent-wash: #e7f5f1;
+  --sym: #2a7fae;
+  --rail: #fafafa;
+  --rule: #e3e3e3;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; }
+body {
+  font-family: 'Source Sans Pro', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  color: #333;
+  background: #fff;
+}
+a { text-decoration: none; color: inherit; }
+
+/* header */
+#hdr {
+  position: fixed; top: 0; left: 0; right: 0; height: 56px;
+  background: var(--ink); color: #fff;
+  display: flex; align-items: center; padding: 0 20px;
+  z-index: 20;
+}
+/* the hero's eight hub colours, as the rule under the header */
+#hdr::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 3px;
+  background: linear-gradient(90deg,
+    #e0566a 0%, #e0863d 14%, #c9a92f 28%, #6ab04a 43%,
+    #2fae8f 57%, #3f9fd8 71%, #6f7fe0 86%, #a86bd0 100%);
+}
+#hdr .brand { font-size: 20px; font-weight: 600; letter-spacing: .2px; color: #fff; cursor: pointer; }
+#hdr #q {
+  margin-left: 28px; flex: 0 1 360px; min-width: 140px;
+  background: #12161a; color: #e8eaec; border: 1px solid #3a3f44; border-radius: 4px;
+  padding: 6px 10px; font-size: 13px; font-family: inherit; outline: none;
+}
+#hdr #q::placeholder { color: #7d858c; }
+#hdr #q:focus { border-color: var(--accent); background: #0d1114; }
+/* a rail whose every entry is filtered out says so, instead of going blank */
+.nav-empty { padding: 10px 14px; color: #9aa3ab; font-size: 12px; font-style: italic; }
+#hdr .brand .sub { font-size: 12px; font-weight: 400; color: #b9bdc1; margin-left: 10px; }
+#hdr .home {
+  margin-left: auto; display: inline-flex; align-items: center; gap: 6px;
+  font-size: 13px; color: #cfd2d5; border: 1px solid #44484c;
+  padding: 5px 12px; border-radius: 4px;
+}
+#hdr .home:hover { background: #2e3236; color: #fff; }
+#hdr .home svg { width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 2; }
+
+/* layout: guides (left) | content | symbols (right) */
+#main { position: fixed; top: 56px; left: 0; right: 0; bottom: 0; display: flex; }
+#side, #side-right {
+  height: 100%; overflow-y: auto; overflow-x: hidden;
+  background: var(--rail); padding: 14px 0 40px;
+}
+#side { width: 300px; min-width: 220px; max-width: 42%; border-right: 1px solid var(--rule); }
+#side-right { width: 250px; min-width: 170px; max-width: 30%; border-left: 1px solid var(--rule); }
+#content { flex: 1; min-width: 0; height: 100%; position: relative; background: #fff; }
+#frame { width: 100%; height: 100%; border: 0; display: block; }
+#loading {
+  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+  color: #999; font-size: 14px; background: #fff; pointer-events: none;
+  opacity: 0; transition: opacity .15s;
+}
+#loading.on { opacity: 1; }
+
+/* shared list / link styling */
+#side ul, #side-right ul { list-style: none; margin: 0; padding: 0; }
+#side li, #side-right li { position: relative; }
+#side a, #side-right a {
+  display: block; padding: 6px 30px 6px 18px; line-height: 1.35;
+  color: #333; font-size: 14px; border-left: 3px solid transparent; white-space: normal;
+}
+#side a:hover, #side-right a:hover { background: #f0f1f2; }
+#side a.active, #side-right a.active {
+  background: var(--accent-wash); color: var(--accent-deep); border-left-color: var(--accent);
+}
+
+/* left: guide tree */
+#side .nav-root > li { border-bottom: 1px solid #eee; }
+#side ul ul { padding-left: 14px; }
+#side a.gd { font-weight: 600; color: #2a2a2a; }
+#side .nav-root > li > details > summary > a.gd,
+#side .nav-root > li > a.gd { font-size: 15px; }
+
+/* rail section labels, and the thick delimiter above the tech notes */
+.nav-sep { border-top: 4px solid #cfd2d6; margin: 18px 0 6px; }
+#side .nav-label, #side-right .nav-label {
+  margin: 10px 0 2px; padding: 0 18px; font-size: 11px; font-weight: 700;
+  letter-spacing: 0.08em; text-transform: uppercase; color: #7a838c;
+}
+/* worked analyses, kept visually apart from the pedagogical tech notes */
+#side a.app { color: #7c4d9e; }
+#side a.app.active { color: var(--accent-deep); }
+#side a.tut { color: var(--sym); }
+/* backbone tech notes that are still frontmatter only: present, but visibly not written yet */
+#side a.tut-stub { color: #9aa3ab; font-style: italic; }
+#side a.tut-stub:hover { color: #6b747c; }
+#side a.tut-stub.active { color: var(--accent-deep); font-style: normal; }
+
+/* right: symbols */
+#side-right a.sym { color: var(--sym); }
+
+/* collapsible */
+#side details { margin: 0; }
+#side summary { list-style: none; cursor: pointer; position: relative; }
+#side summary::-webkit-details-marker { display: none; }
+#side summary::after {
+  content: '\25B8'; position: absolute; right: 12px; top: 11px;
+  color: #aaa; font-size: 11px;
+}
+#side details[open] > summary::after { content: '\25BE'; }
+#side summary:hover::after { color: #666; }
+
+/* The static pre-render occupies the content area until the live embed is ready, then yields to it.
+   It ships inside a display:none wrapper, so unhide that wrapper and give it the page's own padding.
+   Full width, and the framed embed is widened to match (see HIDE in docs_site.js) - the shell
+   already gives the page a column between two rails, so the embed's own 830px cap just wastes it. */
+#static { display: none; overflow: auto; height: 100%; }
+#static > * { max-width: none; padding: 0 24px; margin: 0; }
+#static.on { display: block; }
+#static .notebook-html { display: block !important; }
+#content.staged #frame { visibility: hidden; }
+
+/* ---- narrow screens ---------------------------------------------------------------------
+   The desktop layout is three fixed columns in a flex row, which leaves a phone with ~40% of the
+   viewport for the actual page. Below 900px the rails become off-canvas drawers opened from the
+   header, and the content takes the full width. Below 560px the header collapses to the brand,
+   the filter and the two drawer buttons. */
+#navToggle, #symToggle, #scrim { display: none; }
+
+@media (max-width: 900px) {
+  #hdr { padding: 0 12px; gap: 8px; }
+  #hdr .brand { font-size: 17px; }
+  #hdr .brand .sub { display: none; }
+  #hdr #q { margin-left: 8px; flex: 1 1 auto; min-width: 0; }
+
+  #navToggle, #symToggle {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 34px; height: 30px; flex: 0 0 auto; cursor: pointer;
+    background: #2a2e32; color: #e8eaec; border: 1px solid #3a3f44; border-radius: 4px;
+    font-size: 15px; line-height: 1; -webkit-tap-highlight-color: transparent;
+  }
+  #navToggle:active, #symToggle:active { background: #3a3f44; }
+
+  /* drawers slide over the content instead of stealing width from it */
+  #side, #side-right {
+    position: fixed; top: 56px; bottom: 0; z-index: 40; width: 82vw; max-width: 320px;
+    transform: translateX(-102%); transition: transform .18s ease-out; resize: none;
+    box-shadow: 0 0 24px rgba(0, 0, 0, .28);
+  }
+  #side { left: 0; }
+  #side-right { right: 0; left: auto; transform: translateX(102%); }
+  #side.open, #side-right.open { transform: translateX(0); }
+
+  #scrim.on { display: block; position: fixed; inset: 56px 0 0; background: rgba(0, 0, 0, .38); z-index: 35; }
+  #content { width: 100%; }
+  /* the pre-render's 4vw gutter is too tight to read against on a phone */
+  #static > * { padding: 0 16px; }
+}
+
+@media (max-width: 560px) {
+  #hdr .home { display: none; }
+  #hdr #q { font-size: 16px; }   /* 16px keeps iOS from zooming the page on focus */
+}
+
+/* a coarse pointer needs a bigger hit target than a mouse does */
+@media (pointer: coarse) {
+  #side a, #side-right a { padding-top: 7px; padding-bottom: 7px; }
+  #side summary { padding-top: 7px; padding-bottom: 7px; }
+}
+
+/* ---- rail splitters ---------------------------------------------------------------------
+   Drag to rebalance the three columns; double-click resets. The hit area is wider than the
+   visible line so it is grabbable without being a visual divider in its own right. */
+.splitter {
+  flex: 0 0 5px; position: relative; cursor: col-resize; background: transparent;
+  -webkit-tap-highlight-color: transparent; touch-action: none;
+}
+.splitter::before {
+  content: ""; position: absolute; top: 0; bottom: 0; left: 2px; width: 1px; background: transparent;
+}
+.splitter:hover::before, .splitter.dragging::before { background: var(--accent); }
+.splitter:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+/* while dragging, the iframe must not swallow the pointer stream */
+#main.resizing #frame { pointer-events: none; }
+#main.resizing { cursor: col-resize; user-select: none; }
+
+@media (max-width: 900px) {
+  /* the rails are drawers here, so there is nothing to resize */
+  .splitter { display: none; }
+}

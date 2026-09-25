@@ -1,7 +1,60 @@
-# Build output. The documentation notebooks are generated from markdown by the
-# parent workspace's scripts/build_notebooks.wls; build/ and *.paclet come from
-# the publish pipeline. None of it is source.
-/Documentation/
-/build/
-*.paclet
+# macOS / editors
 .DS_Store
+*.nb~
+*.mx
+.wolframnb/
+
+# Personal genomic data: never commit it. The documentation examples and the
+# real-file tests read a subject callset from data/ at the repository root;
+# data/ is supplied locally (a directory or a symlink) and never tracked.
+# No trailing slash, so the rule also matches data/ when it is a symlink.
+/data
+# Backstop in case a genomic file lands anywhere else in the tree.
+*.vcf
+*.vcf.gz
+*.bcf
+*.bam
+*.bai
+*.cram
+*.crai
+*.tbi
+*.csi
+*.fastq
+*.fastq.gz
+*.fq
+*.fq.gz
+*.ged
+*.parquet
+
+# Credentials for the cloud deploy (WOLFRAM_CLOUD_USER / WOLFRAM_CLOUD_PASSWORD).
+.env
+
+# Built documentation notebooks: regenerated from docs/en/**.md by
+# scripts/build_notebooks.wls, which wipes the tree each run.
+/Genome/Documentation/
+
+# PacletBuild output from the deploy stage.
+/Genome/build/
+
+# Local documentation site from scripts/build_docs.wls local, and its render cache.
+/build/
+.html-cache/
+
+# Publish artifacts: ResourceDefinition.nb is built from docs/ResourceDefinition.md,
+# the .paclet archive is packed at deploy time, and the scrape cache is written
+# into the working directory. Genome/Assets/hero.png is shipped, so it stays tracked.
+ResourceDefinition.nb
+*.paclet
+.scrape-cache/
+
+# Node tooling for the Playwright runner behind the browser-class genealogy
+# providers: package.json is tracked, the install is not.
+node_modules/
+
+# Saved browser sessions hold cookies for a signed-in archive account. The default
+# location is under $UserBaseDirectory, outside the repository; this catches a
+# GENOME_BROWSER_STATE pointed in here.
+browser-state/
+
+*.log
+*.tmp

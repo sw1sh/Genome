@@ -1,0 +1,9 @@
+{
+  "name": "genome-tools",
+  "private": true,
+  "type": "module",
+  "description": "Node-side tooling for the WolframInstitute/Genome paclet: the Playwright runner that drives the genealogical archives which publish no API.",
+  "dependencies": {
+    "playwright-core": "^1.49.0"
+  }
+}

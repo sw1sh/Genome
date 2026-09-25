@@ -1,6 +1,6 @@
 (* Genome.wlt - VerificationTest specs for the WolframInstitute/Genome paclet.
 
-   Run via:  wolframscript -f wl/Genome/Tests/run.wls
+   Run via:  wolframscript -f Genome/Tests/run.wls
 
    The runner loads the paclet (PacletDirectoryLoad + Get) before
    invoking TestReport on this file, so this file is purely test data.
@@ -18,7 +18,7 @@
 (* Resolve the sample VCF relative to the loaded paclet rather than hard-coding
    an absolute path, so the suite runs from any checkout location.  The paclet is
    loaded before the tests (run.wls does PacletDirectoryLoad + Get), so its
-   Location gives <repo>/wl/Genome; the data directory is two levels up.  The
+   Location gives <repo>/Genome; the data directory sits beside it, at <repo>/data.  The
    file is found by GLOB, never by subject name: this suite ships inside the
    published paclet, so it must not carry an identifier for whoever's genome it
    was run against.  An explicit GENOME_VCF environment variable overrides this. *)
@@ -26,7 +26,7 @@ realVCF = Block[{envPath = Environment["GENOME_VCF"], loc, dataDir, found},
     If[ StringQ[envPath],
         envPath,
         loc = PacletObject["WolframInstitute/Genome"]["Location"];
-        dataDir = FileNameJoin[{ParentDirectory[loc, 2], "data"}];
+        dataDir = FileNameJoin[{ParentDirectory[loc], "data"}];
         found = Sort @ FileNames["*_genome.vcf.gz", dataDir];
         If[ found === {}, FileNameJoin[{dataDir, "genome.vcf.gz"}], First[found]]
     ]

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Genome</title>
+<style>
+  /* The notebook host the shell iframes for doc pages. The embedder is built for a document
+     whose WINDOW scrolls (its lazy rendering keys off window scroll) - hosting it inside an
+     overflow:auto div froze it. Here it lives in normal flow, exactly like the repository
+     pages: the /statichtml pre-render is injected INTO #notebook-embed and the embedder
+     hydrates it in place, so only dynamic elements appear as they come alive. */
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin: 0; background: #fff; }
+  #notebook-embed { padding: 0 24px 48px; }
+  #notebook-embed .notebook-html { display: block; }
+  #err {
+    display: none; margin: 40vh auto 0; max-width: 420px; text-align: center;
+    font: 14px/1.5 "Source Sans Pro", -apple-system, sans-serif; color: #666;
+  }
+  @media (max-width: 900px) { #notebook-embed { padding: 0 14px 40px; } }
+</style>
+</head>
+<body>
+<div id="notebook-embed"></div>
+<div id="err">This page could not be loaded.</div>
+<script>
+(function () {
+  var BASE = '`BASE`',
+      node = document.getElementById('notebook-embed'),
+      m = (new URLSearchParams(location.search).get('p') || '')
+            .match(/^(guide|ref\/format|ref|tutorial)\/([A-Za-z0-9]+)$/);
+  if (!m) { document.getElementById('err').style.display = 'block'; return; }
+  var id = m[1] + '/' + m[2],
+      nbURL = BASE + '/Documentation/' + id + '.nb',
+      // same endpoint the paclet pipeline computes; width matched to this frame (rounded to
+      // 100px buckets so the cloud's per-width render cache actually gets hits)
+      w = Math.round(Math.min(1400, Math.max(500, document.documentElement.clientWidth - 48)) / 100) * 100,
+      staticURL = nbURL.replace('/obj/', '/statichtml/') + '?maxwaitmillis=8000&width=' + w;
+  document.title = m[2];
+
+  function hydrate() {
+    var sc = document.createElement('script');
+    sc.crossOrigin = 'anonymous';
+    sc.src = 'https://www.wolframcdn.com/notebook-embedder/0.3/wolfram-notebook-embedder.min.js';
+    sc.onload = function () {
+      window.WolframNotebookEmbedder.embed(nbURL, node, { showRenderProgress: false });
+    };
+    document.head.appendChild(sc);
+  }
+
+  fetch(staticURL, { credentials: 'omit' })
+    .then(function (r) { return r.ok ? r.text() : ''; })
+    .catch(function () { return ''; })
+    .then(function (html) {
+      if (html) {
+        node.innerHTML = html;
+        var nh = node.querySelector('.notebook-html');
+        if (nh) nh.style.display = 'block';   // paint the pre-render now, not on embedder timing
+      }
+      hydrate();
+    });
+
+  // doc links stay inside the shell: hand navigation up rather than reloading the frame blind
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest && e.target.closest('a[href]');
+    if (!a) return;
+    var lm = (a.getAttribute('href') || '')
+      .match(/\/(guide|ref\/format|ref|tutorial)\/([A-Za-z0-9]+)\.(?:html|nb)(?:[?#].*)?$/);
+    if (!lm) return;
+    e.preventDefault();
+    var t = lm[1] + '/' + lm[2];
+    if (window.parent !== window) window.parent.postMessage({ genomeNav: t }, '*');
+    else location.search = '?p=' + t;
+  });
+})();
+</script>
+</body>
+</html>

@@ -3,7 +3,7 @@
    and report status to stdout.  Exits 1 if any test failed.
 
    Invoke from the repo root:
-       wolframscript -f wl/Genome/Tests/run.wls
+       wolframscript -f Genome/Tests/run.wls
 *)
 
 testsDir = DirectoryName[$InputFileName];
