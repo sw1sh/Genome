@@ -136,13 +136,13 @@ VariantSummary[hg] // Dataset
 The variant layer comes from [ClinVarHits](paclet:WolframInstitute/Genome/ref/ClinVarHits), so a genome reported on carries both slots: `"ClinVarHits"` with every carried Pathogenic / Likely-pathogenic variant, unfiltered, and `"Carrier"` with the classified and frequency-filtered subset. Neither is populated before the report runs, and one call fills both. The demo genome carries no ClinVar Pathogenic / Likely-pathogenic record, so nothing reaches the classifier, the report needs no PanelApp lookup, and the variant layer's slot is an empty [Tabular]() that shows only its columns - the twelve that [ClinVarHits](paclet:WolframInstitute/Genome/ref/ClinVarHits) fills:
 
 ```wl
-CarrierStatus[hg]["ClinVarHits"]
+CarrierStatus[hg]["ClinVarHits"] // Dataset
 ```
 
 The `"Carrier"` slot is the classified subset, empty for the same reason, with the eleven columns a report with hits fills. Its `CarrierClassification` column is always drawn from the five fixed terms, and `Inheritance` from six: PanelApp's verbose MOI strings are folded to `"Autosomal recessive"`, `"Autosomal dominant"`, `"X-linked"`, `"Autosomal recessive/dominant"`, `"Mitochondrial"` or `"Unknown"` before any classification is made, so a report's labels are always drawn from those two closed sets. A carrier table is identifying information about its subject; a tally of its `CarrierClassification` column summarizes a report without naming a gene:
 
 ```wl
-CarrierStatus[hg]["Carrier"]
+CarrierStatus[hg]["Carrier"] // Dataset
 ```
 
 ## Options

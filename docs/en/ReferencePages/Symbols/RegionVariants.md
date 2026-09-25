@@ -115,7 +115,7 @@ RegionVariants[hg, "chr1", {100000, 150000}] // Dataset
 An interval that holds nothing, such as one whose start is past its end, gives an empty [Tabular](), which carries no columns either:
 
 ```wl
-RegionVariants[hg, "chr1", {200000, 100000}]
+RegionVariants[hg, "chr1", {200000, 100000}] // Dataset
 ```
 
 A second chromosome is queried the same way, by name:
@@ -229,7 +229,7 @@ hg = ImportVCF[FileNameJoin[{$TemporaryDirectory, "genome-demo.vcf"}], "Backend"
 This callset writes `"chr1"`, and the unprefixed spelling selects nothing:
 
 ```wl
-RegionVariants[hg, "1", {100000, 200000}]
+RegionVariants[hg, "1", {100000, 200000}] // Dataset
 ```
 
 A chromosome given as a number rather than as a name string matches no definition, and the expression comes back unevaluated:

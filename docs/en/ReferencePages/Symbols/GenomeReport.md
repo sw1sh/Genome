@@ -197,7 +197,7 @@ report["Pharmacogenomics"]
 The clinical-variants section is the [ClinVarHits](paclet:WolframInstitute/Genome/ref/ClinVarHits) result with a `Count` beside it and the full table kept for reference, under the keys `Hits`, `Count` and `Tabular`:
 
 ```wl
-report["ClinicalVariants"]
+report["ClinicalVariants"] // Dataset
 ```
 
 <!-- => Missing["NotComputed"] -->
@@ -205,7 +205,7 @@ report["ClinicalVariants"]
 The carrier section records the frequency threshold it filtered at under `MaxPopulationAF`, the `0.01` [CarrierStatus](paclet:WolframInstitute/Genome/ref/CarrierStatus) default; only variants rarer than that are summarized:
 
 ```wl
-report["CarrierStatus"]
+report["CarrierStatus"] // Dataset
 ```
 
 <!-- => Missing["NotComputed"] -->

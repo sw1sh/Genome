@@ -203,13 +203,13 @@ g = ImportVCF[demoFile]
 Asking for the variants is what reads them. The rows come back as a `Tabular` in the canonical 17-column variant shape, which splits the INFO field into columns of its own and gives each sample a genotype column; six of the eight data lines survive, because the default filters drop the non-`PASS` row and the reference-only row whose `ALT` is `.`:
 
 ```wl
-g["Variants"]
+g["Variants"] // Dataset
 ```
 
 `VariantSummary` aggregates a row set into the counts that describe it, a two-column `Tabular` of metric and value:
 
 ```wl
-VariantSummary[g]
+VariantSummary[g] // Dataset
 ```
 
 ## Scope
@@ -263,13 +263,13 @@ g["Chromosome", "chr1"]["MinR2", 0.8]["Filters"]
 The rules apply together when a query finally forces the rows. One `chr1` row clears an imputation r-squared of 0.8, and the directly assayed rows carry no `R2` at all, so that same threshold takes them out too:
 
 ```wl
-g["Chromosome", "chr1"]["MinR2", 0.8]["Variants"]
+g["Chromosome", "chr1"]["MinR2", 0.8]["Variants"] // Dataset
 ```
 
 A region query takes a chromosome and an interval and materializes the rows inside it:
 
 ```wl
-RegionVariants[g, "chr1", {100000, 250000}]
+RegionVariants[g, "chr1", {100000, 250000}] // Dataset
 ```
 
 A point query takes an rsID and hands back the whole variant call, its INFO fields exploded into columns of their own:
@@ -297,7 +297,7 @@ GenotypeLookup[demoFile, "rs300"]["GT"]
 They take an already-materialized table too, so a second question about rows in hand costs no further reading:
 
 ```wl
-RegionVariants[g["Variants"], "chr17", {1, 2000000}]
+RegionVariants[g["Variants"], "chr17", {1, 2000000}] // Dataset
 ```
 
 ## Options
@@ -327,13 +327,13 @@ Options[ImportVCF]
 Switching the two of them off keeps every data line in the file, the `LowQual` row and the reference-only row whose `ALT` is empty included:
 
 ```wl
-ImportVCF[demoFile, "PASSOnly" -> False, "ExcludeReferenceOnly" -> False]["Variants"]
+ImportVCF[demoFile, "PASSOnly" -> False, "ExcludeReferenceOnly" -> False]["Variants"] // Dataset
 ```
 
 `"MaxVariants"` caps the rows a query materializes, which is how a whole-genome file stays interactive while an analysis is still being drafted:
 
 ```wl
-ImportVCF[demoFile, "MaxVariants" -> 2]["Variants"]
+ImportVCF[demoFile, "MaxVariants" -> 2]["Variants"] // Dataset
 ```
 
 A single-sample file on a human build is promoted to a `HumanGenome`, and `"Human" -> False` keeps the generic handle instead: the same file, the same backend, no interpretation layer:
@@ -494,7 +494,7 @@ FamilyTreePlot[demoTree]
 `GenealogySearch` carries a person out to the archives, with the years from the record already filled in. With the browser switched off it hands back the addressed query rather than running it:
 
 ```wl
-GenealogySearch[demoTree, "I1", "Providers" -> "FindAGrave", "Browser" -> False]
+GenealogySearch[demoTree, "I1", "Providers" -> "FindAGrave", "Browser" -> False] // Dataset
 ```
 
 ## Neat Examples
@@ -541,5 +541,5 @@ big["VariantCount"]
 And a five-kilobase window comes back as the handful of rows inside it, which is the query the whole design is built around:
 
 ```wl
-RegionVariants[big, "chr1", {5000000, 5005000}]
+RegionVariants[big, "chr1", {5000000, 5005000}] // Dataset
 ```

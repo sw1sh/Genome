@@ -140,7 +140,7 @@ hg["Variants"] // Dataset
 The demo genome carries no ClinVar Pathogenic / Likely-pathogenic record, so the join keeps nothing, and the slot of the joined genome is an empty [Tabular]() that shows only its columns - the same twelve a join with hits fills:
 
 ```wl
-ClinVarHits[hg]["ClinVarHits"]
+ClinVarHits[hg]["ClinVarHits"] // Dataset
 ```
 
 ## Options
