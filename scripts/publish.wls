@@ -163,6 +163,19 @@ With[{want = Environment["GENOME_CLOUD_ACCOUNT"]},
     ]
 ]
 
+(* The documentation examples - the resource page's included - evaluate against the subject
+   callset at data/subject_genome.vcf.gz, by that repo-relative path.  ImportVCF on a missing
+   file does not fail: it returns an empty Genome handle (build Unknown, no samples), so every
+   example after it ships unevaluated.  The resource page went out exactly that way once, with
+   a verification that looked only for Failure and $Failed and so passed.  Refuse instead. *)
+SetDirectory[repoRoot]
+If[ ! FileExistsQ[FileNameJoin[{repoRoot, "data", "subject_genome.vcf.gz"}]],
+    Print["publish: ABORT - data/subject_genome.vcf.gz is not readable at the repository root (",
+          repoRoot, "). The documentation examples evaluate against it; supply data/ there (a",
+          " directory or a symlink) and re-run."];
+    Exit[1]
+]
+
 If[ ! FileExistsQ[resDefSrc],
     Print["publish: ", resDefSrc, " not found."];
     Exit[1]

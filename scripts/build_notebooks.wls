@@ -107,6 +107,16 @@ freshDir[dir_] := (
     If[ DirectoryQ[dir] && $only === {}, DeleteDirectory[dir, DeleteContents -> True]];
     If[ ! DirectoryQ[dir], CreateDirectory[dir, CreateIntermediateDirectories -> True]]
 )
+(* A full build re-evaluates every page, and the pages that open on the subject callset only
+   show real output when data/subject_genome.vcf.gz is readable - without it ImportVCF hands
+   back an empty handle and every example after it is unevaluated, silently.  A named-pages
+   build may run without it, for pages that need no data. *)
+If[ $only === {} && ! FileExistsQ[FileNameJoin[{repoRoot, "data", "subject_genome.vcf.gz"}]],
+    Print["FAIL  data/subject_genome.vcf.gz is not readable at ", repoRoot,
+          " - a full build would publish unevaluated examples. Supply data/ or name the pages to build."];
+    Exit[1]
+]
+
 freshDir /@ {guidesOut, tutorialsOut, symbolsOut, formatsOut}
 
 (* Output is FLAT by basename, regardless of how the source is nested.  The
