@@ -490,11 +490,12 @@ The scripts read these environment overrides, all prefixed `GENOME_`:
 | `GENOME_CLOUD_ACCOUNT` | the only cloud account a publish or site deploy may use (`wolframinstitute`); any other refuses |
 | `GENOME_PUBLISH_DIR` | where the clean paclet copy is staged (default: under `$TemporaryDirectory`; must be outside the repository) |
 | `GENOME_PUBLISH_BUILT_DOCS` | a directory containing `English/` to bundle as-is, skipping both doc builds |
+| `GENOME_PUBLISH_REUSE_NOTEBOOKS` | `1` DocumentationBuilds the authoring notebooks already under `Genome/Documentation/English` instead of regenerating them from markdown - for a machine without the subject callset; refresh any page that needs no data first with `build_notebooks.wls <Name>` |
 | `GENOME_PUBLISH_SKIP_DOCBUILD` | `1` stages the authoring notebooks without `DocumentationBuild` - fast, but the pages render pre-built |
 | `GENOME_MTN` | path to a local `MarkdownToNotebook.wl` checkout, instead of the deployed cloud resource function |
 | `GENOME_SCRAPE_STRICT` | `1` forces a strict scrape instead of the tolerant default |
 | `GENOME_DOCBUILD_DIR` | where `docbuild.wls` stages its build copy (default: under `$TemporaryDirectory`; must be outside the repository) |
-| `GENOME_DOCBUILD_KERNELS` | worker-kernel count for the page build (default: `Max[2, Min[8, $ProcessorCount]]`) |
+| `GENOME_DOCBUILD_KERNELS` | worker-kernel count for the page build AND for the deploy's parallel steps (the notebook transform, the page upload); each transform worker starts its own front end too (default: `Max[2, Min[8, $ProcessorCount]]`; set 2 when other sessions hold kernels) |
 | `GENOME_DOCBUILD_TIMEOUT` | per-page build limit in seconds (default: 300) |
 | `GENOME_VCF` | path to the single-sample VCF the test suite exercises, overriding the `data/` default |
 | `GENOME_LOCAL_ONLY` | `build_docs.wls local` renders only this page, e.g. `Guides/Genome` or `ReferencePages/Symbols/ImportVCF` |

@@ -24,6 +24,26 @@ Needs["PacletResource`"]
 Needs["PacletTools`"]
 
 (* ====================================================================== *)
+(* Worker kernels.  Every parallel step here launches its workers through   *)
+(* pmLaunchWorkers, sized by GENOME_DOCBUILD_KERNELS - the same count the   *)
+(* page build uses, and the one every documented publish sets to 2.  The    *)
+(* scrape used to launch Max[8, $ProcessorCount] on its own: sixteen workers *)
+(* on this machine, each starting a front end and a kernel of its own, and   *)
+(* with other sessions holding licence seats they all sat at 0% CPU for half  *)
+(* an hour without failing (2026-09-25).  A warm scrape cache hid it: with    *)
+(* nothing to transform, the pool never did any work.                         *)
+(* ====================================================================== *)
+pmWorkerCount[] := With[{e = Environment["GENOME_DOCBUILD_KERNELS"]},
+	If[ StringQ[e] && StringMatchQ[e, DigitCharacter ..] && ToExpression[e] > 0,
+		ToExpression[e],
+		Max[2, Min[8, $ProcessorCount]]]]
+
+pmLaunchWorkers[timeout_] :=
+	If[ Length[Kernels[]] === 0,
+		Print["deploy: launching ", pmWorkerCount[], " worker kernels"];
+		Quiet @ TimeConstrained[LaunchKernels[pmWorkerCount[]], timeout, CloseKernels[]]]
+
+(* ====================================================================== *)
 (* Cloud directory records.                                                 *)
 (* A cloud directory whose own metadata record has gone missing still SERVES  *)
 (* its children: <dir>/HeroImage.png resolves, <dir> does not.  It disappears  *)
@@ -127,7 +147,7 @@ pmMergeDeployDocs[root_, dir_, opts : OptionsPattern[CloudObject]] :=
 				DeleteDuplicates[
 					Most /@ (Drop[FileNameSplit[#], Length[FileNameSplit[dir]]] & /@ files)],
 				{}]];
-		If[ Length[Kernels[]] === 0, Quiet @ TimeConstrained[LaunchKernels[], 90, CloseKernels[]]];
+		pmLaunchWorkers[90];
 		(* Block-wise upload with MASTER-side progress prints: worker Print forwarding is swallowed
 		   inside the ScrapeResource/CloudDeploy output capture, master prints land. *)
 		Module[{done = 0},
@@ -219,8 +239,7 @@ pmParallelizeScrapeProcessing[] := (
 			];
 
 			Print["scrape: processing ", Length[files], " documentation notebooks in parallel"];
-			If[ Length[Kernels[]] === 0,
-				Quiet @ TimeConstrained[LaunchKernels[Max[8, $ProcessorCount]], 240, CloseKernels[]]];
+			pmLaunchWorkers[240];
 			(* block-wise with MASTER-side progress prints: worker Print forwarding is swallowed
 			   inside the ScrapeResource output capture, master prints reach the log *)
 			missRes = Module[{done = 0, res = {}, blockRes},

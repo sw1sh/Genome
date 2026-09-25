@@ -203,8 +203,18 @@ builtEng =
             If[ FileNames["*.nb", docEng, Infinity] === {}, runStep["build_notebooks.wls", "build_notebooks.wls"]];
             docEng,
         True,
-            Print["publish: building authoring notebooks (build_notebooks.wls) ..."];
-            runStep["build_notebooks.wls", "build_notebooks.wls"];
+            (* GENOME_PUBLISH_REUSE_NOTEBOOKS=1 keeps the authoring notebooks already under
+               Genome/Documentation/English instead of regenerating them from markdown, and
+               still DocumentationBuilds them through the normal path below.  Regenerating
+               re-evaluates every page against the subject callset in data/; reusing lets a
+               machine without it publish what was last built, after refreshing any page it
+               can (build_notebooks.wls <Name> rebuilds just that page). *)
+            If[ Environment["GENOME_PUBLISH_REUSE_NOTEBOOKS"] === "1" && FileNames["*.nb", docEng, Infinity] =!= {},
+                Print["publish: GENOME_PUBLISH_REUSE_NOTEBOOKS=1 - reusing the ",
+                      Length[FileNames["*.nb", docEng, Infinity]], " authoring notebooks, not rebuilding them"],
+                Print["publish: building authoring notebooks (build_notebooks.wls) ..."];
+                runStep["build_notebooks.wls", "build_notebooks.wls"]
+            ];
             Print["publish: DocumentationBuild'ing the pages (docbuild.wls) ..."];
             runStep["docbuild.wls", "docbuild.wls"];
             With[{dbEng = FileNameJoin[{$TemporaryDirectory, "WolframInstituteGenome-docbuild", "Documentation", "English"}]},

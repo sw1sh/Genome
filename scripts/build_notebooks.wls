@@ -91,10 +91,21 @@ If[ ! (Head[mtn] === ResourceFunction || OwnValues[mtn] =!= {} || DownValues[mtn
     Exit[1]
 ]
 
-(* Wipe and recreate each output root so a moved source leaves no stale notebook. *)
+(* Named pages: page basenames on the command line (`... build_notebooks.wls
+   FamilyTreePlot ImportVCF`) rebuild only those sources and leave every other
+   notebook where it is.  A page that evaluates nothing but its own synthetic
+   fixture can be refreshed this way on a machine without the subject callset,
+   where a full build would wipe the tree and re-evaluate every page against data
+   it cannot read.  When publish.wls Gets this script, $ScriptCommandLine is
+   publish.wls's own, with no page names, so a publish always builds everything. *)
+$only = Rest[$ScriptCommandLine];
+pick[srcs_List] := If[ $only === {}, srcs, Select[srcs, MemberQ[$only, FileBaseName[#]] &]]
+
+(* A full build wipes and recreates each output root, so a moved source leaves no
+   stale notebook.  A named-pages build only makes sure the roots exist. *)
 freshDir[dir_] := (
-    If[ DirectoryQ[dir], DeleteDirectory[dir, DeleteContents -> True]];
-    CreateDirectory[dir, CreateIntermediateDirectories -> True]
+    If[ DirectoryQ[dir] && $only === {}, DeleteDirectory[dir, DeleteContents -> True]];
+    If[ ! DirectoryQ[dir], CreateDirectory[dir, CreateIntermediateDirectories -> True]]
 )
 freshDir /@ {guidesOut, tutorialsOut, symbolsOut, formatsOut}
 
@@ -114,15 +125,15 @@ build[src_, out_, opts___] := (
     ]
 )
 
-guideResults = build[#, FileNameJoin[{guidesOut, FileBaseName[#] <> ".nb"}]] & /@ Sort[FileNames["*.md", guidesSrc, Infinity]]
+guideResults = build[#, FileNameJoin[{guidesOut, FileBaseName[#] <> ".nb"}]] & /@ pick[Sort[FileNames["*.md", guidesSrc, Infinity]]]
 
-tutorialResults = build[#, FileNameJoin[{tutorialsOut, FileBaseName[#] <> ".nb"}], "EvaluateSeparator" -> None] & /@ Sort[FileNames["*.md", tutorialsSrc, Infinity]]
+tutorialResults = build[#, FileNameJoin[{tutorialsOut, FileBaseName[#] <> ".nb"}], "EvaluateSeparator" -> None] & /@ pick[Sort[FileNames["*.md", tutorialsSrc, Infinity]]]
 
-symbolResults = build[#, FileNameJoin[{symbolsOut, FileBaseName[#] <> ".nb"}]] & /@ Sort[FileNames["*.md", symbolsSrc, Infinity]]
+symbolResults = build[#, FileNameJoin[{symbolsOut, FileBaseName[#] <> ".nb"}]] & /@ pick[Sort[FileNames["*.md", symbolsSrc, Infinity]]]
 
 (* Format pages (Template: Format) build like symbol pages, into ReferencePages/Formats. *)
 formatResults = If[ DirectoryQ[formatsSrc],
-    build[#, FileNameJoin[{formatsOut, FileBaseName[#] <> ".nb"}]] & /@ Sort[FileNames["*.md", formatsSrc, Infinity]],
+    build[#, FileNameJoin[{formatsOut, FileBaseName[#] <> ".nb"}]] & /@ pick[Sort[FileNames["*.md", formatsSrc, Infinity]]],
     {}]
 
 results = Join[guideResults, tutorialResults, symbolResults, formatResults]
